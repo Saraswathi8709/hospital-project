@@ -30,16 +30,27 @@ function Dashboard() {
     "4:00 PM"
   ];
 
-  // Fetch appointments
+  // ================= FETCH APPOINTMENTS =================
+
   const fetchAppointments = async () => {
 
-    const response = await fetch(
-      "http://localhost:5000/appointments"
-    );
+    try {
 
-    const data = await response.json();
+      const response = await fetch(
+        "https://hospital-project-rzlo.onrender.com/appointments"
+      );
 
-    setAppointments(data);
+      const data = await response.json();
+
+      setAppointments(data);
+
+    } catch (error) {
+
+      console.error("Error Fetching Appointments:", error);
+
+      alert("Failed to load appointments");
+
+    }
   };
 
   useEffect(() => {
@@ -48,8 +59,17 @@ function Dashboard() {
 
   }, []);
 
-  // Add appointment
+  // ================= ADD APPOINTMENT =================
+
   const addAppointment = async () => {
+
+    // Validation
+    if (!patient || !doctor || !date || !time) {
+
+      alert("Please fill all fields");
+
+      return;
+    }
 
     const newAppointment = {
       patient,
@@ -58,24 +78,40 @@ function Dashboard() {
       time
     };
 
-    await fetch("http://localhost:5000/appointments", {
+    try {
 
-      method: "POST",
+      await fetch(
+        "https://hospital-project-rzlo.onrender.com/appointments",
+        {
 
-      headers: {
-        "Content-Type": "application/json"
-      },
+          method: "POST",
 
-      body: JSON.stringify(newAppointment)
+          headers: {
+            "Content-Type": "application/json"
+          },
 
-    });
+          body: JSON.stringify(newAppointment)
 
-    fetchAppointments();
+        }
+      );
 
-    setPatient("");
-    setDoctor("");
-    setDate("");
-    setTime("");
+      alert("Appointment Added Successfully");
+
+      fetchAppointments();
+
+      // Clear Form
+      setPatient("");
+      setDoctor("");
+      setDate("");
+      setTime("");
+
+    } catch (error) {
+
+      console.error("Error Adding Appointment:", error);
+
+      alert("Failed to add appointment");
+
+    }
   };
 
   return (
@@ -83,6 +119,8 @@ function Dashboard() {
     <div className="container">
 
       <h1>Patient Dashboard</h1>
+
+      {/* Patient Name */}
 
       <input
         type="text"
@@ -160,11 +198,15 @@ function Dashboard() {
 
       <br /><br />
 
+      {/* Add Appointment Button */}
+
       <button onClick={addAppointment}>
         Add Appointment
       </button>
 
       <br /><br />
+
+      {/* Logout Button */}
 
       <button onClick={() => navigate("/")}>
         Logout
@@ -172,25 +214,58 @@ function Dashboard() {
 
       <br /><br />
 
-      <table border="1" style={{ margin: "auto" }}>
+      {/* Appointment Table */}
 
-        <tr>
-          <th>Patient</th>
-          <th>Doctor</th>
-          <th>Date</th>
-          <th>Time</th>
-        </tr>
+      <table
+        border="1"
+        style={{
+          margin: "auto",
+          borderCollapse: "collapse",
+          width: "90%"
+        }}
+      >
 
-        {appointments.map((item, index) => (
+        <thead>
 
-          <tr key={index}>
-            <td>{item.patient}</td>
-            <td>{item.doctor}</td>
-            <td>{item.date}</td>
-            <td>{item.time}</td>
+          <tr>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Time</th>
           </tr>
 
-        ))}
+        </thead>
+
+        <tbody>
+
+          {appointments.length > 0 ? (
+
+            appointments.map((item, index) => (
+
+              <tr key={index}>
+
+                <td>{item.patient}</td>
+                <td>{item.doctor}</td>
+                <td>{item.date}</td>
+                <td>{item.time}</td>
+
+              </tr>
+
+            ))
+
+          ) : (
+
+            <tr>
+
+              <td colSpan="4">
+                No Appointments Available
+              </td>
+
+            </tr>
+
+          )}
+
+        </tbody>
 
       </table>
 

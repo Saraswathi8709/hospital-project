@@ -18,13 +18,16 @@ function App() {
 
       <Routes>
 
+        {/* Login Page */}
         <Route path="/" element={<Login />} />
 
+        {/* Patient Dashboard */}
         <Route
           path="/patient-dashboard"
           element={<Dashboard />}
         />
 
+        {/* Doctor Dashboard */}
         <Route
           path="/doctor-dashboard"
           element={<DoctorDashboard />}

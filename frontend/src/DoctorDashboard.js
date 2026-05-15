@@ -7,17 +7,29 @@ function DoctorDashboard() {
 
   const [appointments, setAppointments] = useState([]);
 
+  // Fetch Appointments from Backend
   const fetchAppointments = async () => {
 
-    const response = await fetch(
-      "http://localhost:5000/appointments"
-    );
+    try {
 
-    const data = await response.json();
+      const response = await fetch(
+        "https://hospital-project-rzlo.onrender.com/appointments"
+      );
 
-    setAppointments(data);
+      const data = await response.json();
+
+      setAppointments(data);
+
+    } catch (error) {
+
+      console.error("Error Fetching Appointments:", error);
+
+      alert("Failed to load appointments");
+
+    }
   };
 
+  // Load data when page opens
   useEffect(() => {
 
     fetchAppointments();
@@ -32,31 +44,64 @@ function DoctorDashboard() {
 
       <h2>Patient Appointments</h2>
 
+      {/* Logout Button */}
       <button onClick={() => navigate("/")}>
         Logout
       </button>
 
       <br /><br />
 
-      <table border="1" style={{ margin: "auto" }}>
+      {/* Appointments Table */}
+      <table
+        border="1"
+        style={{
+          margin: "auto",
+          borderCollapse: "collapse",
+          width: "80%"
+        }}
+      >
 
-        <tr>
-          <th>Patient</th>
-          <th>Doctor</th>
-          <th>Date</th>
-          <th>Time</th>
-        </tr>
+        <thead>
 
-        {appointments.map((item, index) => (
-
-          <tr key={index}>
-            <td>{item.patient}</td>
-            <td>{item.doctor}</td>
-            <td>{item.date}</td>
-            <td>{item.time}</td>
+          <tr>
+            <th>Patient</th>
+            <th>Doctor</th>
+            <th>Date</th>
+            <th>Time</th>
           </tr>
 
-        ))}
+        </thead>
+
+        <tbody>
+
+          {appointments.length > 0 ? (
+
+            appointments.map((item, index) => (
+
+              <tr key={index}>
+
+                <td>{item.patient}</td>
+                <td>{item.doctor}</td>
+                <td>{item.date}</td>
+                <td>{item.time}</td>
+
+              </tr>
+
+            ))
+
+          ) : (
+
+            <tr>
+
+              <td colSpan="4">
+                No Appointments Found
+              </td>
+
+            </tr>
+
+          )}
+
+        </tbody>
 
       </table>
 

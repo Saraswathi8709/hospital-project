@@ -10,45 +10,56 @@ function Login() {
 
   const handleLogin = async () => {
 
-    const response = await fetch("http://localhost:5000/login", {
+    try {
 
-      method: "POST",
+      const response = await fetch(
+        "https://hospital-project-rzlo.onrender.com/login",
+        {
+          method: "POST",
 
-      headers: {
-        "Content-Type": "application/json"
-      },
+          headers: {
+            "Content-Type": "application/json"
+          },
 
-      body: JSON.stringify({
-        username,
-        password
-      })
+          body: JSON.stringify({
+            username,
+            password
+          })
+        }
+      );
 
-    });
+      const data = await response.json();
 
-    const data = await response.json();
+      // Patient Login
+      if (data.role === "patient") {
 
-    // Patient Login
-    if (data.role === "patient") {
+        alert("Patient Login Successful");
 
-      alert("Patient Login Successful");
+        navigate("/patient-dashboard");
 
-      navigate("/patient-dashboard");
+      }
 
-    }
+      // Doctor Login
+      else if (data.role === "doctor") {
 
-    // Doctor Login
-    else if (data.role === "doctor") {
+        alert("Doctor Login Successful");
 
-      alert("Doctor Login Successful");
+        navigate("/doctor-dashboard");
 
-      navigate("/doctor-dashboard");
+      }
 
-    }
+      // Invalid Login
+      else {
 
-    // Invalid Login
-    else {
+        alert("Invalid Credentials");
 
-      alert("Invalid Credentials");
+      }
+
+    } catch (error) {
+
+      console.error("Login Error:", error);
+
+      alert("Server Error");
 
     }
   };
